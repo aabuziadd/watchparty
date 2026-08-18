@@ -33,12 +33,9 @@ import { MultiStreamModal } from "../Modal/MultiStreamModal";
 import { ComboBox } from "../ComboBox/ComboBox";
 import { SearchComponent } from "../SearchComponent/SearchComponent";
 import { Controls } from "../Controls/Controls";
-import { VBrowserModal } from "../Modal/VBrowserModal";
 import { SettingsModal } from "../Settings/SettingsModal";
 import { ErrorModal } from "../Modal/ErrorModal";
 import { PasswordModal } from "../Modal/PasswordModal";
-import { ScreenShareModal } from "../Modal/ScreenShareModal";
-import { FileShareModal } from "../Modal/FileShareModal";
 import firebase from "firebase/compat/app";
 import { SubtitleModal } from "../Modal/SubtitleModal";
 import { HTML } from "./HTML";
@@ -134,9 +131,6 @@ interface AppState {
   nonPlayableMedia: boolean;
   currentTab: string;
   isSubscribeModalOpen: boolean;
-  isVBrowserModalOpen: boolean;
-  isScreenShareModalOpen: boolean;
-  isFileShareModalOpen: boolean;
   isSubtitleModalOpen: boolean;
   isMultiSelectModalOpen: boolean;
   roomLock: string;
@@ -202,9 +196,6 @@ export class App extends React.Component<AppProps, AppState> {
     currentTab:
       new URLSearchParams(window.location.search).get("tab") ?? "chat",
     isSubscribeModalOpen: false,
-    isVBrowserModalOpen: false,
-    isScreenShareModalOpen: false,
-    isFileShareModalOpen: false,
     isSubtitleModalOpen: false,
     isMultiSelectModalOpen: false,
     roomLock: "",
@@ -2003,25 +1994,6 @@ export class App extends React.Component<AppProps, AppState> {
             startConvert={this.startConvert}
           />
         )}
-        {this.state.isVBrowserModalOpen && (
-          <VBrowserModal
-            closeModal={() => this.setState({ isVBrowserModalOpen: false })}
-            startVBrowser={this.startVBrowser}
-          />
-        )}
-        {this.state.isScreenShareModalOpen && (
-          <ScreenShareModal
-            closeModal={() => this.setState({ isScreenShareModalOpen: false })}
-            startScreenShare={this.startScreenShare}
-          />
-        )}
-        {this.state.isFileShareModalOpen && (
-          <FileShareModal
-            closeModal={() => this.setState({ isFileShareModalOpen: false })}
-            startFileShare={this.startFileShare}
-            startConvert={this.startConvert}
-          />
-        )}
         {this.state.isSubtitleModalOpen && (
           <SubtitleModal
             closeModal={() => this.setState({ isSubtitleModalOpen: false })}
@@ -2163,9 +2135,7 @@ export class App extends React.Component<AppProps, AppState> {
                             color="blue"
                             disabled={!this.haveLock()}
                             onClick={() => {
-                              this.setState({
-                                isScreenShareModalOpen: true,
-                              });
+                              this.startScreenShare(false);
                             }}
                             leftSection={<IconScreenShare />}
                           >
@@ -2180,9 +2150,7 @@ export class App extends React.Component<AppProps, AppState> {
                             disabled={!this.haveLock()}
                             color="green"
                             onClick={() => {
-                              this.setState({
-                                isVBrowserModalOpen: true,
-                              });
+                              this.startVBrowser({ size: "" });
                             }}
                             leftSection={<IconBrowser />}
                           >
@@ -2286,9 +2254,7 @@ export class App extends React.Component<AppProps, AppState> {
                             color="violet"
                             disabled={!this.haveLock()}
                             onClick={() => {
-                              this.setState({
-                                isFileShareModalOpen: true,
-                              });
+                              this.startFileShare(false);
                             }}
                             leftSection={<IconFile />}
                           >
