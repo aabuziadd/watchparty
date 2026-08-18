@@ -47,7 +47,6 @@ import ChatVideoCard from "../ChatVideoCard/ChatVideoCard";
 import { Badge, Button } from "@mantine/core";
 import {
   IconAntennaBars5,
-  IconBrowser,
   IconFile,
   IconKeyboardFilled,
   IconList,
@@ -2129,7 +2128,8 @@ export class App extends React.Component<AppProps, AppState> {
                       )}
                       {!this.localStreamToPublish &&
                         !sharer &&
-                        !this.playingVBrowser() && (
+                        !this.playingVBrowser() &&
+                        !isMobile() && (
                           <Button
                             className={styles.shareButton}
                             color="blue"
@@ -2140,21 +2140,6 @@ export class App extends React.Component<AppProps, AppState> {
                             leftSection={<IconScreenShare />}
                           >
                             Screenshare
-                          </Button>
-                        )}
-                      {!this.localStreamToPublish &&
-                        !sharer &&
-                        !this.playingVBrowser() && (
-                          <Button
-                            className={styles.shareButton}
-                            disabled={!this.haveLock()}
-                            color="green"
-                            onClick={() => {
-                              this.startVBrowser({ size: "" });
-                            }}
-                            leftSection={<IconBrowser />}
-                          >
-                            VBrowser
                           </Button>
                         )}
                       {this.playingVBrowser() && (
