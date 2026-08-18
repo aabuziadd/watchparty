@@ -45,19 +45,6 @@
   flex-grow: 1;
 }
 
-.rightColumn {
-  flex-shrink: 0;
-}
-
-.expandButton {
-  position: absolute;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  top: 50%;
-  right: -30px;
-}
-
 .fullHeightColumn {
   height: 100vh;
   transition: width ease-out 0.5s;

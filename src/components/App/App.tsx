@@ -27,9 +27,7 @@ import {
   getSavedPasswords,
 } from "../../utils/utils";
 import { generateName } from "../../utils/generateName";
-import { Chat } from "../Chat/Chat";
 import { VBrowser } from "../VBrowser/VBrowser";
-import { VideoChat } from "../VideoChat/VideoChat";
 import { getCurrentSettings } from "../Settings/LocalSettings";
 import { MultiStreamModal } from "../Modal/MultiStreamModal";
 import { ComboBox } from "../ComboBox/ComboBox";
@@ -49,24 +47,18 @@ import styles from "./App.module.css";
 import config from "../../config";
 import { MetadataContext } from "../../MetadataContext";
 import ChatVideoCard from "../ChatVideoCard/ChatVideoCard";
-import { ActionIcon, Badge, TextInput, Button } from "@mantine/core";
+import { Badge, Button } from "@mantine/core";
 import {
   IconAntennaBars5,
   IconBrowser,
-  IconChevronLeft,
-  IconChevronRight,
   IconFile,
   IconKeyboardFilled,
   IconList,
   IconScreenShare,
-  IconSettings,
-  IconUser,
   IconUserScreen,
-  IconUsersGroup,
   IconVolume,
   IconX,
 } from "@tabler/icons-react";
-import { InviteButton } from "../InviteButton/InviteButton";
 import type WebTorrent from "webtorrent";
 import type Hls from "hls.js";
 import { type MediaPlayerClass } from "dashjs";
@@ -155,8 +147,6 @@ interface AppState {
   successMessage: string;
   warningMessage: string;
   isChatDisabled: boolean;
-  showChatColumn: boolean;
-  showPeopleColumn: boolean;
   owner: string | undefined;
   vanity: string | undefined;
   password: string | undefined;
@@ -225,19 +215,6 @@ export class App extends React.Component<AppProps, AppState> {
     successMessage: "",
     warningMessage: "",
     isChatDisabled: false,
-    showChatColumn: isMobile()
-      ? true
-      : Boolean(
-          Number(
-            window.localStorage.getItem("watchparty-showchatcolumn") ?? "1",
-          ),
-        ),
-    showPeopleColumn: false,
-    // Boolean(
-    //       Number(
-    //         window.localStorage.getItem('watchparty-showpeoplecolumn') ?? '0',
-    //       ),
-    //     ),
     owner: undefined,
     vanity: undefined,
     password: undefined,
@@ -270,8 +247,6 @@ export class App extends React.Component<AppProps, AppState> {
       return this.HTMLInterface;
     }
   };
-
-  chatRef = React.createRef<Chat>();
 
   async componentDidMount() {
     document.onfullscreenchange = this.onFullScreenChange;
@@ -728,16 +703,7 @@ export class App extends React.Component<AppProps, AppState> {
       msg.reactions = msg.reactions || {};
       msg.reactions[data.value] = msg.reactions[data.value] || [];
       msg.reactions[data.value].push(data.user);
-      this.setState({ chat }, () => {
-        // if we add a reaction to the last message we need to scroll down
-        // or else the reaction icon might be hidden
-        if (
-          msgIndex === chat.length - 1 &&
-          this.chatRef.current?.state.isNearBottom
-        ) {
-          this.chatRef.current?.scrollToBottom();
-        }
-      });
+      this.setState({ chat });
     });
     socket.on("REC:removeReaction", (data: Reaction) => {
       const { chat } = this.state;
@@ -1801,7 +1767,6 @@ export class App extends React.Component<AppProps, AppState> {
 
   onFullScreenChange = () => {
     this.setState({ fullScreen: Boolean(document.fullscreenElement) });
-    setTimeout(() => this.chatRef.current?.scrollToBottom(), 100);
   };
 
   onKeydown = (e: any) => {
@@ -2554,146 +2519,7 @@ export class App extends React.Component<AppProps, AppState> {
                   </div>
                 </div>
                 {this.state.roomMedia && controls}
-                {!isMobile() && (
-                  <div className={styles.expandButton}>
-                    <ActionIcon
-                      onClick={() => {
-                        const newVal = !this.state.showChatColumn;
-                        this.setState({
-                          showChatColumn: newVal,
-                        });
-                        window.localStorage.setItem(
-                          "watchparty-showchatcolumn",
-                          Number(newVal).toString(),
-                        );
-                      }}
-                    >
-                      {this.state.showChatColumn ? (
-                        <IconChevronRight size={16} />
-                      ) : (
-                        <IconChevronLeft size={16} />
-                      )}
-                    </ActionIcon>
-                  </div>
-                )}
               </div>
-            </div>
-            <div
-              style={{
-                display: "flex",
-                flexDirection: "column",
-                position: "relative",
-                width: this.state.showChatColumn ? 400 : 0,
-                maxWidth: 400,
-                overflow: "hidden",
-                gap: "4px",
-              }}
-              className={`${
-                (this.state.fullScreen
-                  ? styles.fullHeightColumnFullscreen
-                  : styles.fullHeightColumn) +
-                " " +
-                styles.rightColumn
-              }`}
-            >
-              <div style={{ display: "flex", width: "100%", gap: "4px" }}>
-                <TextInput
-                  // description="Name"
-                  style={{
-                    visibility: this.state.showChatColumn
-                      ? undefined
-                      : "hidden",
-                    flexGrow: 1,
-                  }}
-                  value={this.state.myName}
-                  onChange={(e) => {
-                    this.updateName(e.target.value);
-                  }}
-                  onFocus={(e) => e.target.select()}
-                  leftSection={<IconUser />}
-                  rightSectionWidth={70}
-                  rightSection={
-                    <Button
-                      size="compact-xs"
-                      onClick={async () =>
-                        this.updateName(await generateName())
-                      }
-                    >
-                      Random
-                    </Button>
-                  }
-                />
-                <InviteButton />
-              </div>
-              <div style={{ display: "flex", gap: "4px" }}>
-                <Button
-                  color="grey"
-                  onClick={() =>
-                    this.setState({
-                      showPeopleColumn: !this.state.showPeopleColumn,
-                    })
-                  }
-                  fullWidth
-                  leftSection={<IconUsersGroup />}
-                  rightSection={
-                    <Badge circle>{this.state.participants.length}</Badge>
-                  }
-                >
-                  People
-                </Button>
-                <Button
-                  color="grey"
-                  title="Settings"
-                  fullWidth
-                  onClick={() => {
-                    this.setSettingsModalOpen(true);
-                  }}
-                  leftSection={<IconSettings />}
-                >
-                  Settings
-                </Button>
-              </div>
-              {this.state.state === "connected" && (
-                <div
-                  style={{
-                    position: "absolute",
-                    background: "rgba(10, 10, 10, 0.6)",
-                    zIndex: 200,
-                    left: 0,
-                    top: 76,
-                    height: this.state.showPeopleColumn
-                      ? "calc(100% - 120px)"
-                      : "0%",
-                    width: "100%",
-                    overflowY: "auto",
-                    // visibility: this.state.showPeopleColumn ? 'visible' : 'hidden',
-                    transition: "height ease-out 0.5s",
-                  }}
-                >
-                  <VideoChat
-                    socket={this.socket}
-                    participants={this.state.participants}
-                    nameMap={this.state.nameMap}
-                    pictureMap={this.state.pictureMap}
-                    tsMap={this.state.tsMap}
-                    rosterUpdateTS={this.state.rosterUpdateTS}
-                    owner={this.state.owner}
-                    getLeaderTime={this.getLeaderTime}
-                  />
-                </div>
-              )}
-              <Chat
-                chat={this.state.chat}
-                nameMap={this.state.nameMap}
-                pictureMap={this.state.pictureMap}
-                socket={this.socket}
-                scrollTimestamp={this.state.scrollTimestamp}
-                getMediaDisplayName={this.getMediaDisplayName}
-                isChatDisabled={this.state.isChatDisabled}
-                owner={this.state.owner}
-                ref={this.chatRef}
-                hide={!this.state.showChatColumn}
-              />
             </div>
           </div>
         }
