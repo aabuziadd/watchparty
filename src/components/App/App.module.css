@@ -59,7 +59,7 @@
 }
 
 .fullHeightColumn {
-  height: calc(100vh - 72px);
+  height: 100vh;
   transition: width ease-out 0.5s;
   &.leftColumn {
     @media only screen and (max-width: 600px) {

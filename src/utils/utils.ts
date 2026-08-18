@@ -398,6 +398,6 @@ function uuidv4() {
   );
 }
 
-// Subtract header, URL row, button row, 3 gaps, controls
+// Subtract URL row, button row, 3 gaps, controls
 export const VIDEO_MAX_HEIGHT_CSS =
-  "calc(100vh - 64px - 36px - 36px - 4px - 4px - 4px - 32px)";
+  "calc(100vh - 36px - 36px - 4px - 4px - 4px - 32px)";

@@ -28,7 +28,6 @@ import {
 } from "../../utils/utils";
 import { generateName } from "../../utils/generateName";
 import { Chat } from "../Chat/Chat";
-import { TopBar } from "../TopBar/TopBar";
 import { VBrowser } from "../VBrowser/VBrowser";
 import { VideoChat } from "../VideoChat/VideoChat";
 import { getCurrentSettings } from "../Settings/LocalSettings";
@@ -2145,13 +2144,6 @@ export class App extends React.Component<AppProps, AppState> {
           >
             {this.state.warningMessage}
           </Alert>
-        )}
-        {!this.state.fullScreen && (
-          <TopBar
-            roomTitle={this.state.roomTitle}
-            roomDescription={this.state.roomDescription}
-            roomTitleColor={this.state.roomTitleColor}
-          />
         )}
         {
           <div

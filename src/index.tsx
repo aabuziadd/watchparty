@@ -8,7 +8,6 @@ import { BrowserRouter, Route } from "react-router-dom";
 import { App } from "./components/App/App";
 import { Home } from "./components/Home/Home";
 import { Privacy, Terms, FAQ } from "./components/Pages/Pages";
-import { TopBar } from "./components/TopBar/TopBar";
 import { Footer } from "./components/Footer/Footer";
 import firebase from "firebase/compat/app";
 import "firebase/auth";
@@ -77,7 +76,6 @@ class WatchParty extends React.Component {
               render={(props) => {
                 return (
                   <React.Fragment>
-                    <TopBar hideNewRoom />
                     <Home />
                     <Footer />
                   </React.Fragment>
@@ -106,17 +104,14 @@ class WatchParty extends React.Component {
               }}
             />
             <Route path="/terms">
-              <TopBar />
               <Terms />
               <Footer />
             </Route>
             <Route path="/privacy">
-              <TopBar />
               <Privacy />
               <Footer />
             </Route>
             <Route path="/faq">
-              <TopBar />
               <FAQ />
               <Footer />
             </Route>
@@ -124,7 +119,6 @@ class WatchParty extends React.Component {
               <Discord />
             </Route>
             <Route path="/debug">
-              <TopBar />
               <Suspense fallback={null}>
                 <Debug />
               </Suspense>
