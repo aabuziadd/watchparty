@@ -1,0 +1,52 @@
+services:
+  watchparty:
+    build: .
+    container_name: watchparty
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    environment:
+      PORT: "8080"
+      HOST: "0.0.0.0"
+      DATABASE_URL: postgresql://watchparty:watchparty@postgres:5432/watchparty?sslmode=disable
+      REDIS_URL: redis:6379
+      YOUTUBE_API_KEY: ${YOUTUBE_API_KEY:-}
+      VITE_FIREBASE_CONFIG: ${VITE_FIREBASE_CONFIG:-}
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  postgres:
+    image: postgres:16-alpine
+    container_name: watchparty_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: watchparty
+      POSTGRES_USER: watchparty
+      POSTGRES_PASSWORD: watchparty
+    volumes:
+      - watchparty-postgres:/var/lib/postgresql/data
+      - ./sql/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U watchparty -d watchparty"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  redis:
+    image: redis:7-alpine
+    container_name: watchparty_redis
+    restart: unless-stopped
+    volumes:
+      - watchparty-redis:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+volumes:
+  watchparty-postgres:
+  watchparty-redis:
